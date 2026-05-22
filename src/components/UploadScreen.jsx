@@ -28,6 +28,10 @@ export default function UploadScreen({ onStart, error }) {
     if (f) setFile(f);
   }
 
+  function useSample() {
+    setFile({ name: 'Maya_Okonkwo_Resume.pdf', size: 290816, isSample: true });
+  }
+
   return (
     <div className="app-shell">
       <div className="upload-nav">
@@ -131,7 +135,12 @@ export default function UploadScreen({ onStart, error }) {
                 )}
               </div>
 
-
+              {!file && (
+                <div className="sample-row">
+                  <Icon.info />
+                  <span>Don't have a PDF handy? <button onClick={useSample}>Try with a sample resume</button></span>
+                </div>
+              )}
 
               <div className="upload-cta-row">
                 <span className="legal">Your file stays in memory. We don't store it.</span>

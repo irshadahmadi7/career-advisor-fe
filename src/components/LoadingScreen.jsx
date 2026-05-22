@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { BrandMark, Icon } from './Icons';
 import { analyzeResume } from '../api/analyzeResume';
+import { MOCK_REPORT } from '../data/mockData';
 
 const STEPS = [
   { label: 'Extracting text from your PDF', t: 1.2 },
@@ -58,16 +59,28 @@ export default function LoadingScreen({ file, onDone, onError }) {
 
     const run = async () => {
       try {
-        let data = await analyzeResume(file);
-        const remaining = MIN_DISPLAY_MS - elapsed();
-        if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
-        data = {
-          ...data,
-          candidate_name: nameFromFile(file.name),
-          resume_filename: file.name,
-          resume_size: formatSize(file.size),
-          uploaded_at: formatTimestamp(),
-        };
+        let data;
+        if (file?.isSample) {
+          await new Promise((r) => setTimeout(r, Math.max(0, MIN_DISPLAY_MS - elapsed())));
+          data = {
+            ...MOCK_REPORT,
+            candidate_name: 'Maya Okonkwo',
+            resume_filename: 'Maya_Okonkwo_Resume.pdf',
+            resume_size: '284 KB',
+            uploaded_at: formatTimestamp(),
+          };
+        } else {
+          data = await analyzeResume(file);
+          const remaining = MIN_DISPLAY_MS - elapsed();
+          if (remaining > 0) await new Promise((r) => setTimeout(r, remaining));
+          data = {
+            ...data,
+            candidate_name: nameFromFile(file.name),
+            resume_filename: file.name,
+            resume_size: formatSize(file.size),
+            uploaded_at: formatTimestamp(),
+          };
+        }
         apiResultRef.current = { data };
       } catch (err) {
         apiResultRef.current = { error: err.message };
